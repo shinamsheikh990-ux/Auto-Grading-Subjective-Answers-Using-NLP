@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-card">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <span style="font-size: 2.5rem;">🎓</span>
+      <h2 style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;">Sign In</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Auto-Grading Subjective Answers</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+      <div class="form-group">
+        <label class="form-label" for="role">Select Role</label>
+        <select class="form-control" name="role" id="role" required>
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <input type="text" class="form-control" name="username" id="username" placeholder="Enter your username" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" class="form-control" name="password" id="password" placeholder="Enter password" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top: 1rem;">Sign In</button>
+    </form>
+
+    <div class="demo-credentials">
+      <strong style="display: block; margin-bottom: 0.25rem;">Quick Demo Logins:</strong>
+      <div class="demo-btn-group">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="setDemo('teacher', 'teacher', 'teacher123')">
+          👨‍🏫 Teacher Demo
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="setDemo('student', 'student', 'student123')">
+          🎓 Student Demo
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 1.25rem; font-size: 0.9rem; color: var(--text-muted);">
+      Don't have an account? <a href="{{ url_for('register') }}" style="color: var(--primary); font-weight: 600; text-decoration: none;">Register here</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function setDemo(role, username, password) {
+  document.getElementById('role').value = role;
+  document.getElementById('username').value = username;
+  document.getElementById('password').value = password;
+  document.getElementById('loginForm').submit();
+}
+</script>
+{% endblock %}

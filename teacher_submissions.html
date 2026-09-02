@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}All Submissions{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--dark);">Student Submissions</h1>
+    <p style="color: var(--text-muted);">Overview of all subjective answers evaluated by the NLP system.</p>
+  </div>
+  <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary btn-sm">&larr; Back to Dashboard</a>
+</div>
+
+<div class="card">
+  {% if submissions %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width: 60px;">ID</th>
+            <th>Student</th>
+            <th>Question</th>
+            <th style="width: 140px; text-align: center;">Marks Obtained</th>
+            <th style="width: 110px; text-align: center;">Similarity</th>
+            <th style="width: 140px;">Submitted</th>
+            <th style="width: 100px; text-align: center;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in submissions %}
+            <tr>
+              <td style="font-weight: 600; color: var(--text-muted);">#{{ s.id }}</td>
+              <td>
+                <strong style="color: var(--dark);">{{ s.student_name }}</strong>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">@{{ s.student_username }}</div>
+              </td>
+              <td>
+                <span style="font-size: 0.9rem; color: var(--text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                  {{ s.question_text }}
+                </span>
+              </td>
+              <td style="text-align: center;">
+                <span style="font-size: 1.05rem; font-weight: 700; color: var(--primary);">
+                  {{ s.marks_obtained }} / {{ s.max_marks }}
+                </span>
+              </td>
+              <td style="text-align: center;">
+                {% set sim_pct = (s.similarity_score * 100) | round(1) %}
+                <span class="user-badge {% if sim_pct >= 70 %}badge-teacher{% else %}badge-student{% endif %}">
+                  {{ sim_pct }}%
+                </span>
+              </td>
+              <td style="font-size: 0.85rem; color: var(--text-muted);">
+                {{ s.submitted_at }}
+              </td>
+              <td style="text-align: center;">
+                <a href="{{ url_for('view_result', submission_id=s.id) }}" class="btn btn-secondary btn-sm">
+                  View &rarr;
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+      <p style="font-size: 1.1rem;">No student submissions recorded yet.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

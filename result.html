@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Grading Result - Question #{{ submission.question_id }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 950px; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
+    <div>
+      <a href="{% if session.get('role') == 'teacher' %}{{ url_for('teacher_submissions') }}{% else %}{{ url_for('student_dashboard') }}{% endif %}" class="nav-link" style="padding-left: 0;">
+        &larr; {% if session.get('role') == 'teacher' %}Back to Submissions{% else %}Back to Dashboard{% endif %}
+      </a>
+      <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--dark); margin-top: 0.5rem;">Evaluation & Grading Report</h1>
+    </div>
+    <span style="font-size: 0.85rem; color: var(--text-muted);">
+      Submitted: {{ submission.submitted_at }}
+    </span>
+  </div>
+
+  <!-- Score Banner -->
+  <div class="score-banner">
+    <div class="score-display">
+      <div style="font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 0.25rem;">
+        Marks Obtained
+      </div>
+      <div class="score-big">
+        {{ submission.marks_obtained }}<span class="score-denom"> / {{ submission.max_marks }}</span>
+      </div>
+      <div style="font-size: 0.85rem; opacity: 0.9;">
+        Student: <strong>{{ submission.student_name }}</strong>
+      </div>
+    </div>
+
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; font-size: 0.95rem; font-weight: 600;">
+        <span>NLP Cosine Similarity</span>
+        <span style="font-size: 1.3rem;">{{ similarity_percentage }}%</span>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" style="width: {{ similarity_percentage }}%;"></div>
+      </div>
+      <div style="margin-top: 0.75rem; font-size: 0.9rem; line-height: 1.4; background: rgba(255,255,255,0.15); padding: 0.75rem; border-radius: 8px;">
+        <strong>Feedback:</strong> {{ submission.feedback }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Grading Formula Card -->
+  <div class="formula-card">
+    <div class="formula-icon">📐</div>
+    <div class="formula-text">
+      <strong>Grading Formula:</strong> 
+      <code>Marks = Similarity Score × Maximum Marks</code> &rarr; 
+      <code>{{ submission.marks_obtained }} = {{ submission.similarity_score }} × {{ submission.max_marks }}</code>
+    </div>
+  </div>
+
+  <!-- Question Box -->
+  <div class="card">
+    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+      <span class="user-badge badge-teacher">Question</span>
+      <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Max Marks: {{ submission.max_marks }}</span>
+    </div>
+    <p style="font-size: 1.15rem; font-weight: 700; color: var(--dark);">
+      {{ submission.question_text }}
+    </p>
+  </div>
+
+  <!-- Side by Side Answer Comparison -->
+  <div class="comparison-grid">
+    <!-- Student Answer -->
+    <div class="answer-box">
+      <div class="answer-box-header" style="color: var(--primary);">
+        <span>✍️ Student Answer</span>
+      </div>
+      <div class="answer-box-content">{{ submission.student_answer }}</div>
+    </div>
+
+    <!-- Reference Answer -->
+    <div class="answer-box">
+      <div class="answer-box-header" style="color: #059669;">
+        <span>🎯 Model / Reference Answer</span>
+      </div>
+      <div class="answer-box-content">{{ submission.reference_answer }}</div>
+    </div>
+  </div>
+
+  <!-- NLP Breakdown / Keywords Analysis -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">🔍 NLP Keyword Analysis Breakdown</h3>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      <div>
+        <h4 style="font-size: 0.95rem; font-weight: 600; color: #15803d; margin-bottom: 0.5rem;">
+          ✅ Matched Key Concepts ({{ grade_info.matched_keywords|length }})
+        </h4>
+        <div class="keyword-group">
+          {% if grade_info.matched_keywords %}
+            {% for kw in grade_info.matched_keywords %}
+              <span class="chip chip-match">{{ kw }}</span>
+            {% endfor %}
+          {% else %}
+            <span style="font-size: 0.85rem; color: var(--text-muted);">No overlapping keywords found.</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div>
+        <h4 style="font-size: 0.95rem; font-weight: 600; color: #b91c1c; margin-bottom: 0.5rem;">
+          ❌ Missing Key Concepts from Reference ({{ grade_info.missing_keywords|length }})
+        </h4>
+        <div class="keyword-group">
+          {% if grade_info.missing_keywords %}
+            {% for kw in grade_info.missing_keywords %}
+              <span class="chip chip-missing">{{ kw }}</span>
+            {% endfor %}
+          {% else %}
+            <span style="font-size: 0.85rem; color: var(--success); font-weight: 600;">Great job! All key concepts were covered!</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Action Buttons -->
+  <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-bottom: 3rem;">
+    {% if session.get('role') == 'student' %}
+      <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary">
+        &larr; Back to Dashboard
+      </a>
+      <a href="{{ url_for('attempt_question', question_id=submission.question_id) }}" class="btn btn-primary">
+        🔄 Re-attempt Question
+      </a>
+    {% else %}
+      <a href="{{ url_for('teacher_submissions') }}" class="btn btn-primary">
+        &larr; Back to All Submissions
+      </a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

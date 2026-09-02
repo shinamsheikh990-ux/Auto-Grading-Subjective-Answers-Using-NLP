@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Auto-Grading Subjective Answers{% endblock %} - NLP Grader</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="brand">
+        <span class="brand-icon">📝</span>
+        <span>AutoGrader <small style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted);">(NLP)</small></span>
+      </a>
+
+      <div class="nav-links">
+        {% if session.get('user_id') %}
+          {% if session.get('role') == 'teacher' %}
+            <a href="{{ url_for('teacher_dashboard') }}" class="nav-link">Dashboard</a>
+            <a href="{{ url_for('add_question') }}" class="nav-link">+ Add Question</a>
+            <a href="{{ url_for('teacher_submissions') }}" class="nav-link">Student Submissions</a>
+            <span class="user-badge badge-teacher">👨‍🏫 Teacher: {{ session.get('name') }}</span>
+          {% else %}
+            <a href="{{ url_for('student_dashboard') }}" class="nav-link">Questions & History</a>
+            <span class="user-badge badge-student">🎓 Student: {{ session.get('name') }}</span>
+          {% endif %}
+          <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" style="margin-left: 0.5rem;">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="nav-link">Login</a>
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+              <span>{{ message }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Page Content -->
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>Auto-Grading Subjective Answers Using NLP &bull; Powered by Flask, SQLite, NLTK & Scikit-Learn</p>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

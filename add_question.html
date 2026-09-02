@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Question{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+  <div style="margin-bottom: 1.5rem;">
+    <a href="{{ url_for('teacher_dashboard') }}" class="nav-link" style="padding-left: 0;">&larr; Back to Dashboard</a>
+    <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--dark); margin-top: 0.5rem;">Create Subjective Question</h1>
+    <p style="color: var(--text-muted);">Set up the question, ideal reference answer for NLP matching, and the maximum marks.</p>
+  </div>
+
+  <div class="card">
+    <form method="POST" action="{{ url_for('add_question') }}">
+      <div class="form-group">
+        <label class="form-label" for="question_text">Question Prompt</label>
+        <textarea class="form-control" name="question_text" id="question_text" rows="3" placeholder="e.g. Explain the difference between Supervised and Unsupervised Learning." required></textarea>
+        <small style="color: var(--text-muted); font-size: 0.8rem;">State the question clearly and concisely.</small>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="reference_answer">Model / Reference Answer</label>
+        <textarea class="form-control" name="reference_answer" id="reference_answer" rows="6" placeholder="Enter the complete model answer containing key concepts, terms, and explanations that students are expected to include..." required></textarea>
+        <small style="color: var(--text-muted); font-size: 0.8rem;">💡 The NLP grading model uses this reference answer to build TF-IDF vectors and compare semantic similarity.</small>
+      </div>
+
+      <div class="form-group" style="max-width: 250px;">
+        <label class="form-label" for="max_marks">Maximum Marks</label>
+        <input type="number" step="0.5" min="1" max="100" class="form-control" name="max_marks" id="max_marks" value="10" required>
+        <small style="color: var(--text-muted); font-size: 0.8rem;">E.g. 5, 10, or 20 marks.</small>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.75rem; border-top: 1px solid var(--border); padding-top: 1.25rem;">
+        <button type="submit" class="btn btn-primary">Save Question</button>
+        <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

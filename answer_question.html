@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Answer Question #{{ question.id }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 850px; margin: 0 auto;">
+  <div style="margin-bottom: 1.5rem;">
+    <a href="{{ url_for('student_dashboard') }}" class="nav-link" style="padding-left: 0;">&larr; Back to Dashboard</a>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+      <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--dark);">Submit Your Answer</h1>
+      <span class="user-badge badge-student" style="font-size: 0.9rem;">Maximum Marks: {{ question.max_marks }}</span>
+    </div>
+  </div>
+
+  <!-- Question Card -->
+  <div class="card" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);">
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+      <span class="user-badge badge-teacher" style="font-size: 0.8rem;">Question #{{ question.id }}</span>
+    </div>
+    <p style="font-size: 1.15rem; font-weight: 600; color: var(--dark); line-height: 1.5;">
+      {{ question.question_text }}
+    </p>
+  </div>
+
+  <!-- Answer Form -->
+  <div class="card">
+    <form method="POST" action="{{ url_for('attempt_question', question_id=question.id) }}">
+      <div class="form-group">
+        <label class="form-label" for="student_answer">Your Subjective Answer</label>
+        <textarea 
+          class="form-control" 
+          name="student_answer" 
+          id="student_answer" 
+          rows="9" 
+          placeholder="Type your complete explanation here. Include key concepts, definitions, and technical terminology..." 
+          required
+          oninput="updateWordCount(this)"></textarea>
+        <div style="display: flex; justify-content: space-between; margin-top: 0.4rem; color: var(--text-muted); font-size: 0.8rem;">
+          <span>💡 Tip: Express the core ideas and technical terms clearly.</span>
+          <span id="wordCount">0 words</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.25rem;">
+        <button type="submit" class="btn btn-primary" style="font-size: 1rem; padding: 0.75rem 1.5rem;">
+          🚀 Submit & Grade Answer
+        </button>
+        <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateWordCount(textarea) {
+  const text = textarea.value.trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  document.getElementById('wordCount').innerText = words + (words === 1 ? ' word' : ' words');
+}
+</script>
+{% endblock %}
